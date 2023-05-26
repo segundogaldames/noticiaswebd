@@ -4,6 +4,7 @@
             {$asunto}
             <a href="{$_layoutParams.root}roles/create" class="btn btn-outline-secondary">Nuevo Rol</a>
         </h1>
+        {include file="../partials/_messages.tpl"}
         {if isset($roles) && count($roles)}
             <table class="table table-hover">
                 <thead>

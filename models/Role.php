@@ -4,8 +4,8 @@ namespace models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Example extends Model
+class Role extends Model
 {
-    protected $table = '';
-    protected $fillable = [];
+    protected $table = 'roles';
+    protected $fillable = ['nombre'];
 }
