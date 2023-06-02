@@ -7,4 +7,5 @@
     <input type="hidden" name="_method" value="PUT">
     <input type="hidden" name="send" value="{$send}">
     <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="{$_layoutParams.root}roles" class="btn btn-link">Volver</a>
 </form>

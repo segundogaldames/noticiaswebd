@@ -30,7 +30,7 @@
                   <li>
                     <hr class="dropdown-divider">
                   </li>
-                  <li><a class="dropdown-item" href="#">Usuarios</a></li>
+                  <li><a class="dropdown-item" href="{$_layoutParams.root}usuarios">Usuarios</a></li>
                 </ul>
               </div>
               <a class="nav-link active text-dark" aria-current="page" href="#">Active</a>
