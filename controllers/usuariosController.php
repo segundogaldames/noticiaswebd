@@ -11,6 +11,7 @@ class usuariosController extends Controller
 
     public function index()
     {
+        $this->validateInAdminEditor();
         $this->getMessages();
 
         $this->_view->assign('title','Usuarios');
@@ -22,11 +23,15 @@ class usuariosController extends Controller
 
     public function create()
     {
+        $this->validateInAdmin();
         $this->getMessages();
 
         $this->_view->assign('title','Usuarios');
         $this->_view->assign('asunto','Nuevo Usuario');
         $this->_view->assign('process','usuarios/store');
+        $this->_view->assign('usuario', Session::get('data'));
+        $this->_view->assign('roles', Role::select('id','nombre')->orderBy('nombre')->get());
+        $this->_view->assign('action', 'create');
         $this->_view->assign('send', $this->encrypt($this->getForm()));
 
         $this->_view->render('create');
@@ -34,8 +39,9 @@ class usuariosController extends Controller
 
     public function store()
     {
+        $this->validateInAdmin();
         $this->validateForm('usuarios/create',[
-            'run' => Filter::getText('rut'),
+            'run' => Filter::getText('run'),
             'nombre' => Filter::getText('nombre'),
             'email' => $this->validateEmail(Filter::getPostParam('email')),
             'password' => Filter::getSql('password'),
@@ -52,6 +58,21 @@ class usuariosController extends Controller
             $this->redirect('usuarios/create');
         }
 
+        if (!$this->validateRut(Filter::getText('run'))) {
+            Session::set('msg_error','Ingrese un RUN válido');
+            $this->redirect('usuarios/create');
+        }
+
+        if (strlen(Filter::getSql('password')) < 8) {
+            Session::set('msg_error','El password debe contener al menos 8 caracteres');
+            $this->redirect('usuarios/create');
+        }
+
+        if (Filter::getSql('repassword') != Filter::getSql('password')) {
+            Session::set('msg_error','Los passwords ingresados no coinciden');
+            $this->redirect('usuarios/create');
+        }
+
         $usuario = new Usuario;
         $usuario->run = Filter::getText('run');
         $usuario->nombre = Filter::getText('nombre');
@@ -61,32 +82,37 @@ class usuariosController extends Controller
         $usuario->role_id = Filter::getInt('rol');
         $usuario->save();
 
+        Session::destroy('data');
         Session::set('msg_success','El usuario se ha registrado correctamente');
         $this->redirect('usuarios');
     }
 
     public function show($id = null)
     {
-        Validate::validateModel(Role::class, $id, 'error/error');
+        $this->validateInAdminEditor();
+        Validate::validateModel(Usuario::class, $id, 'error/error');
 
         $this->getMessages();
 
-        $this->_view->assign('title','Roles');
-        $this->_view->assign('asunto','Detalle Rol');
-        $this->_view->assign('role', Role::find(Filter::filterInt($id)));
+        $this->_view->assign('title','Usuarios');
+        $this->_view->assign('asunto','Detalle Usuario');
+        $this->_view->assign('usuario', Usuario::with('role')->find(Filter::filterInt($id)));
         $this->_view->render('show');
     }
 
     public function edit($id = null)
     {
-        Validate::validateModel(Role::class, $id, 'error/error');
+        $this->validateInAdmin();
+        Validate::validateModel(Usuario::class, $id, 'error/error');
 
         $this->getMessages();
 
-        $this->_view->assign('title','Roles');
-        $this->_view->assign('asunto','Editar Rol');
-        $this->_view->assign('role', Role::find(Filter::filterInt($id)));
-        $this->_view->assign('process',"roles/update/{$id}");
+        $this->_view->assign('title','Usuaros');
+        $this->_view->assign('asunto','Editar Usuario');
+        $this->_view->assign('usuario', Usuario::with('role')->find(Filter::filterInt($id)));
+        $this->_view->assign('roles', Role::select('id','nombre')->orderBy('nombre')->get());
+        $this->_view->assign('action', 'edit');
+        $this->_view->assign('process',"usuarios/update/{$id}");
         $this->_view->assign('send', $this->encrypt($this->getForm()));
 
         $this->_view->render('edit');
@@ -94,16 +120,25 @@ class usuariosController extends Controller
 
     public function update($id = null)
     {
-        $this->validatePUT();
-        $this->validateForm("roles/edit/{$id}",[
+        $this->validateInAdmin();
+        $this->validateForm("usuarios/edit/{$id}",[
+            'run' => Filter::getText('run'),
             'nombre' => Filter::getText('nombre'),
+            'email' => $this->validateEmail(Filter::getPostParam('email')),
+            'activo' => Filter::getText('activo'),
+            'rol' => Filter::getText('rol')
         ]);
 
-        $rol = Role::find(Filter::filterInt($id));
-        $rol->nombre = Filter::getText('nombre');
-        $rol->save();
+        $usuario = Usuario::find(Filter::filterInt($id));
+        $usuario->run = Filter::getText('run');
+        $usuario->nombre = Filter::getText('nombre');
+        $usuario->email = Filter::getPostParam('email');
+        $usuario->activo = Filter::getInt('activo');
+        $usuario->role_id = Filter::getInt('rol');
+        $usuario->save();
 
-        Session::set('msg_success','El rol se ha modificado correctamente');
-        $this->redirect('roles/show/' . $id);
+        Session::destroy('data');
+        Session::set('msg_success','El usuario se ha modificado correctamente');
+        $this->redirect('usuarios/show/' . $id);
     }
 }

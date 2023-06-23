@@ -1,4 +1,5 @@
 {include file="../partials/_messages.tpl"}
+{Session::get('usuario_role')}
 <h1 class="fw-secondary">Noticias de Chile y el Mundo</h1>
 <p class="lead text-muted">Una propuesta de desarrollo de software simple, escalable, basado en buenas prácticas de
     programación y el uso de MVC (Modelo-vista-Controlador) como patrón de diseño.</p>

@@ -19,24 +19,26 @@
         <div class="row">
           {* barra lateral izquierda *}
           <div class="col-md-2">
-            <nav class="nav flex-column">
-              <div class="dropdown">
-                <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                  aria-expanded="false">
-                  Usuarios
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="{$_layoutParams.root}roles">Roles</a></li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li><a class="dropdown-item" href="{$_layoutParams.root}usuarios">Usuarios</a></li>
-                </ul>
-              </div>
-              <a class="nav-link active text-dark" aria-current="page" href="#">Active</a>
-              <a class="nav-link text-dark" href="#">Link</a>
-              <a class="nav-link text-dark" href="#">Link</a>
-          </nav>
+            {if Session::get('authenticate')}
+              <nav class="nav flex-column">
+                <div class="dropdown">
+                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Usuarios
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{$_layoutParams.root}roles">Roles</a></li>
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="{$_layoutParams.root}usuarios">Usuarios</a></li>
+                  </ul>
+                </div>
+                <a class="nav-link active text-dark" aria-current="page" href="#">Active</a>
+                <a class="nav-link text-dark" href="#">Link</a>
+                <a class="nav-link text-dark" href="{$_layoutParams.root}login/logout">Cerrar Session</a>
+              </nav>
+            {/if}
           </div>
           <div class="col-md-10">
             {include file=$_content}

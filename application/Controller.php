@@ -141,6 +141,19 @@ class Controller
 		}
 	}
 
+	protected function validateInAdmin(){
+		$this->validateSession();
+		Session::time();
+		$this->validateRol(['Administrador']);
+	}
+
+	protected function validateInAdminEditor(){
+		$this->validateSession();
+		Session::time();
+		$this->validateRol(['Administrador','Editor']);
+	}
+
+
 	#metodo que valida el metodo PUT en el formulario
 	#usado para modificar un registro en la base de datos
 	protected function validatePUT()
@@ -156,18 +169,18 @@ class Controller
 
 		if (is_array($roles)) {
 			foreach ($roles as $role) {
-				if (Session::get('user_role') == $role) {
+				if (Session::get('usuario_role') == $role) {
 					return true;
 				}
 			}
 		}
 
-		$this->redirect();
+		$this->redirect('error/denied');
 	}
 
 	#metodo que verifica la autenticacion de un usuario
 	protected function validateSession(){
-		if (!Session::get('autenticate')) {
+		if (!Session::get('authenticate')) {
 			$this->redirect('login/login');
 		}
 
